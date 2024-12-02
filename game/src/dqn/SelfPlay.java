@@ -7,11 +7,18 @@ public class SelfPlay {
     public static void main(String[] args){
         GameState game = new GameState(5);
 
+        int stop = 30;
+
         while (!game.isGameOver()){
             Line l = AIPlayer.chooseRandomLine(game.grid);
             game.turn(l);
-        }
+            stop--;
+            if (stop == 0){
+                break;
+            }
 
+        }
+        System.out.println(game.getState());
         SwingUtilities.invokeLater(() -> DisplayGameState.display(game.grid));
 
 
