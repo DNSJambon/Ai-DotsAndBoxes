@@ -5,9 +5,9 @@ import javax.swing.*;
 
 public class SelfPlay {
     public static void main(String[] args){
-        GameState game = new GameState(5);
+        GameState game = new GameState(3);
 
-        int stop = 30;
+        int stop = 3;
 
         while (!game.isGameOver()){
             Line l = AIPlayer.chooseRandomLine(game.grid);

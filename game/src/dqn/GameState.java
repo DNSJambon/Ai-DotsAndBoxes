@@ -2,11 +2,15 @@ package dqn;
 
 import game.model.*;
 
+import java.util.ArrayList;
+
 public class GameState {
+    public int N;
     public Grid grid;
-    private Player currentPlayer;
+    public Player currentPlayer;
 
     public GameState(int N){
+        this.N = N;
         this.grid = new Grid(N, false);
         this.currentPlayer = grid.getPlayer1();
     }
@@ -33,8 +37,8 @@ public class GameState {
     |   |   |
     *-11*-12-*
      */
-    public String getState(){
-        StringBuilder state = new StringBuilder();
+    public int[] getState(){
+        ArrayList<Integer> state = new ArrayList<>();
         int n = grid.getSize();
         for (int j = 0; j < n; j++){
             for (int i = 0; i < n; i++){
@@ -48,41 +52,52 @@ public class GameState {
                 if (i==n-1){
                     //last column, so we count only the line to the bottom
                     if (grid.getLine(d, grid.getDot(i, j+1)) != null)
-                        state.append("1");
+                        state.add(1);
                     else
-                        state.append("0");
+                        state.add(0);
                     continue;
                 }
 
                 if (j==n-1){
                     //last row, so we count only the line to the right
                     if (grid.getLine(d, grid.getDot(i+1, j)) != null)
-                        state.append("1");
+                        state.add(1);
                     else
-                        state.append("0");
+                        state.add(0);
                     continue;
                 }
 
                 //line to his right
                 if (grid.getLine(d, grid.getDot(i+1, j)) != null)
-                    state.append("1");
+                    state.add(1);
                 else
-                    state.append("0");
+                    state.add(0);
                 //line to his bottom
                 if (grid.getLine(d, grid.getDot(i, j+1)) != null)
-                    state.append("1");
+                    state.add(1);
                 else
-                    state.append("0");
+                    state.add(0);
 
             }
         }
-        return state.toString();
+        return state.stream().mapToInt(i -> i).toArray();
     }
 
+    public int getReward(Player player){
+        if (player == grid.getPlayer1()){
+            return grid.getPlayer1().getScore() - grid.getPlayer2().getScore();
+        }
+        else {
+            return grid.getPlayer2().getScore() - grid.getPlayer1().getScore();
+        }
+    }
 
     public boolean isGameOver(){
         return grid.isGameOver();
     }
 
 
+    public void applyAction(int action) {
+
+    }
 }
