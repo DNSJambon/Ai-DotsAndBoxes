@@ -8,18 +8,47 @@ public class GameState {
     public int N;
     public Grid grid;
     public Player currentPlayer;
+    public int[] state;
 
     public GameState(int N){
         this.N = N;
         this.grid = new Grid(N, false);
         this.currentPlayer = grid.getPlayer1();
+        this.state = new int[2 * N * (N-1)];
     }
 
-    public void turn(Line line){
-        boolean box = grid.addLine(line.getDot1(), line.getDot2(), currentPlayer);
+
+    public void turn(Dot d1, Dot d2){
+        boolean box = grid.addLine(d1, d2, currentPlayer);
         if (!box){
             currentPlayer = (currentPlayer == grid.getPlayer1()) ? grid.getPlayer2() : grid.getPlayer1();
         }
+    }
+
+
+    // we have to convert the action to the corresponding line
+    public void applyAction(int action) {
+        int nbHorizontalLines = (N-1) * N;
+        Dot d1;
+        Dot d2;
+        if (action < nbHorizontalLines){
+            int j = action / (N-1);
+            int i = action % (N-1);
+            d1 = grid.getDot(i, j);
+            d2 = grid.getDot(i+1, j);
+            turn(d1, d2);
+            state[action] = 1;
+        }
+        else {
+            int j = (action - nbHorizontalLines) / N;
+            int i = (action - nbHorizontalLines) % N;
+            d1 = grid.getDot(i, j);
+            d2 = grid.getDot(i, j+1);
+            turn(d1, d2);
+            state[action] = 1;
+        }
+        //System.out.println("Applying action: " + action + " = " + d1 + "-" + d2);
+
     }
 
 
@@ -27,60 +56,18 @@ public class GameState {
     /*
     The state is a string of 0 and 1 representing the lines of the grid, where 0 means no line and 1 means a line.
     the order of the lines in the string in a 3x3 grid for reference:
-    *-1-*-3-*
+    *-1-*-2-*
     |   |   |
-    2   4   5
+    7   9   11
     |   |   |
-    *-6-*-8-*
+    *-3-*-4-*
     |   |   |
-    7   9   10
+    8   10  12
     |   |   |
-    *-11*-12-*
+    *-5-*-6-*
      */
     public int[] getState(){
-        ArrayList<Integer> state = new ArrayList<>();
-        int n = grid.getSize();
-        for (int j = 0; j < n; j++){
-            for (int i = 0; i < n; i++){
-                Dot d = grid.getDot(i, j);
-
-                if (i==n-1 && j==n-1){
-                    //last row and last column, no line to count
-                    continue;
-                }
-
-                if (i==n-1){
-                    //last column, so we count only the line to the bottom
-                    if (grid.getLine(d, grid.getDot(i, j+1)) != null)
-                        state.add(1);
-                    else
-                        state.add(0);
-                    continue;
-                }
-
-                if (j==n-1){
-                    //last row, so we count only the line to the right
-                    if (grid.getLine(d, grid.getDot(i+1, j)) != null)
-                        state.add(1);
-                    else
-                        state.add(0);
-                    continue;
-                }
-
-                //line to his right
-                if (grid.getLine(d, grid.getDot(i+1, j)) != null)
-                    state.add(1);
-                else
-                    state.add(0);
-                //line to his bottom
-                if (grid.getLine(d, grid.getDot(i, j+1)) != null)
-                    state.add(1);
-                else
-                    state.add(0);
-
-            }
-        }
-        return state.stream().mapToInt(i -> i).toArray();
+        return state;
     }
 
     public int getReward(Player player){
@@ -97,7 +84,5 @@ public class GameState {
     }
 
 
-    public void applyAction(int action) {
 
-    }
 }

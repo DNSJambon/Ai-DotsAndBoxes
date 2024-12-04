@@ -2,23 +2,30 @@ package dqn;
 import game.model.*;
 
 import javax.swing.*;
+import java.util.Arrays;
+import java.util.Random;
 
 public class SelfPlay {
     public static void main(String[] args){
-        GameState game = new GameState(3);
+        GameState game = new GameState(5);
 
-        int stop = 3;
+        int stop = 100;
 
         while (!game.isGameOver()){
-            Line l = AIPlayer.chooseRandomLine(game.grid);
-            game.turn(l);
+            int[] state = game.getState();
+            System.out.println(Arrays.toString(game.getState()));
+            int action = new Random().nextInt(state.length);
+            while (state[action] != 0) {
+                action = new Random().nextInt(state.length);
+            }
+            game.applyAction(action);
             stop--;
             if (stop == 0){
                 break;
             }
 
         }
-        System.out.println(game.getState());
+        System.out.println(Arrays.toString(game.getState()));
         SwingUtilities.invokeLater(() -> DisplayGameState.display(game.grid));
 
 

@@ -44,7 +44,10 @@ public class DQNTrainer {
     private int selectAction(int[] state) {
         // Epsilon-greedy action selection
         if (Math.random() < 0.1) { // Exploration
-            return new Random().nextInt(state.length);
+            int action = new Random().nextInt(state.length);
+            while (state[action] != 0) {
+                action = new Random().nextInt(state.length);
+            }
         } else { // Exploitation
             // Predict Q-values and choose the best action
 
