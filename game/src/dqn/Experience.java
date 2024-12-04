@@ -14,4 +14,24 @@ public class Experience {
         this.nextState = nextState;
         this.isTerminal = isTerminal;
     }
+
+    public int[] getState() {
+        return state;
+    }
+
+    public int getAction() {
+        return action;
+    }
+
+    public int getReward() {
+        return reward;
+    }
+
+    public int[] getNextState() {
+        return nextState;
+    }
+
+    public boolean isDone() {
+        return isTerminal;
+    }
 }

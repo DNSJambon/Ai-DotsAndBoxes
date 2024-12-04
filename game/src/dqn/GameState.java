@@ -56,15 +56,15 @@ public class GameState {
     /*
     The state is a string of 0 and 1 representing the lines of the grid, where 0 means no line and 1 means a line.
     the order of the lines in the string in a 3x3 grid for reference:
-    *-1-*-2-*
+    *-0-*-1-*
+    |   |   |
+    6   8   10
+    |   |   |
+    *-2-*-3-*
     |   |   |
     7   9   11
     |   |   |
-    *-3-*-4-*
-    |   |   |
-    8   10  12
-    |   |   |
-    *-5-*-6-*
+    *-4-*-5-*
      */
     public int[] getState(){
         return state;

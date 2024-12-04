@@ -1,6 +1,17 @@
 package dqn;
 
 import ai.djl.Model;
+import ai.djl.inference.Predictor;
+import ai.djl.ndarray.NDArray;
+import ai.djl.ndarray.NDManager;
+import ai.djl.training.DefaultTrainingConfig;
+import ai.djl.training.Trainer;
+import ai.djl.training.TrainingConfig;
+import ai.djl.training.listener.TrainingListener;
+import ai.djl.training.loss.Loss;
+import ai.djl.training.optimizer.Optimizer;
+import ai.djl.translate.TranslateException;
+
 import java.util.Random;
 import java.util.List;
 
@@ -8,6 +19,8 @@ public class DQNTrainer {
     private ReplayBuffer replayBuffer;
     private Model policyModel;
     private Model targetModel;
+    private Trainer trainer;
+
     private int batchSize = 32;
     private double gamma = 0.99;
 
@@ -15,6 +28,13 @@ public class DQNTrainer {
         this.policyModel = policyModel;
         this.targetModel = targetModel;
         this.replayBuffer = new ReplayBuffer(bufferSize);
+
+        TrainingConfig config = new DefaultTrainingConfig(Loss.l2Loss())
+                .optOptimizer(Optimizer.adam().build()) // Adam optimizer
+                .addTrainingListeners(TrainingListener.Defaults.logging());
+
+        trainer = policyModel.newTrainer(config);
+
     }
 
     public void train(int episodes) {
@@ -24,6 +44,12 @@ public class DQNTrainer {
 
             while (!game.isGameOver()) {
                 int action = selectAction(state);
+                if (state[action] != 0) {
+                    int reward = -100;
+                    replayBuffer.addExperience(new Experience(state, action, reward, state, true));
+                    break;
+                }
+
                 game.applyAction(action);
                 int[] nextState = game.getState();
                 int reward = game.getReward(game.currentPlayer);
@@ -32,9 +58,13 @@ public class DQNTrainer {
                 replayBuffer.addExperience(new Experience(state, action, reward, nextState, done));
 
                 state = nextState;
-                if (done) break;
 
-                trainFromReplayBuffer();
+
+                if (replayBuffer.size() >= replayBuffer.getCapacity()) {
+                    trainFromReplayBuffer();
+                }
+
+                if (done) break;
             }
 
             updateTargetModel(); // Sync target model with policy model
@@ -48,16 +78,16 @@ public class DQNTrainer {
             while (state[action] != 0) {
                 action = new Random().nextInt(state.length);
             }
+            return action;
         } else { // Exploitation
-            // Predict Q-values and choose the best action
-
+            // Compute Q-values from the policy model
+            return 0;
         }
-        return 0;
     }
 
-    private void trainFromReplayBuffer() {
+    private void trainFromReplayBuffer(){
         List<Experience> batch = replayBuffer.sampleBatch(batchSize);
-        // Compute targets and train the policy model
+
 
     }
 

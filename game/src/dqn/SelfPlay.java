@@ -7,13 +7,12 @@ import java.util.Random;
 
 public class SelfPlay {
     public static void main(String[] args){
-        GameState game = new GameState(5);
+        GameState game = new GameState(4);
 
         int stop = 100;
 
         while (!game.isGameOver()){
             int[] state = game.getState();
-            System.out.println(Arrays.toString(game.getState()));
             int action = new Random().nextInt(state.length);
             while (state[action] != 0) {
                 action = new Random().nextInt(state.length);

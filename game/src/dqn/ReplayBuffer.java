@@ -15,7 +15,7 @@ public class ReplayBuffer {
 
     public void addExperience(Experience experience) {
         if (buffer.size() >= capacity) {
-            buffer.removeFirst(); // Remove oldest experience
+            buffer.clear();
         }
         buffer.add(experience);
     }
@@ -23,6 +23,14 @@ public class ReplayBuffer {
     public List<Experience> sampleBatch(int batchSize) {
         Collections.shuffle(buffer);
         return buffer.subList(0, Math.min(batchSize, buffer.size()));
+    }
+
+    public int size() {
+        return buffer.size();
+    }
+
+    public int getCapacity(){
+        return capacity;
     }
 
 }

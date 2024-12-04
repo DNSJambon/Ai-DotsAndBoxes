@@ -14,6 +14,13 @@ public class Grid{
     private final Player player2;
 
 
+    // represents all possible lines in the grid,
+    // in a defined order (horizontal lines first, then vertical lines),
+    // null if the line do not exist, for now
+    private final Line[] state;
+
+
+
     public Grid (int N, boolean bot){
         if (N < 2 || N > 10){
             throw new IllegalArgumentException("Grid size has to be between 2 and 10.");
@@ -22,6 +29,7 @@ public class Grid{
         dots = new Dot[N][N];
         lines = new ArrayList<>();
         boxes = new ArrayList<>();
+        state = new Line[2 * N * (N-1)];
 
         for (int i = 0; i < N; i++){
             for (int j = 0; j < N; j++){
@@ -66,13 +74,12 @@ public class Grid{
             d2 = temp;
         }
 
-        for (Line l : lines){
-            if (l.getDot1() == d1 && l.getDot2() == d2){
-                return l;
-            }
-        }
-        return null;
+        // we use the state array to get the line
+        // so this often used method is O(1)
+        return state[DotsToIndex(d1, d2)];
     }
+
+
     public Iterator<Line> getLinesIterator() {
         return lines.iterator(); // Retourne un itérateur des lignes
     }
@@ -179,8 +186,23 @@ public class Grid{
 
         Line l = new Line(d1, d2, p);
         lines.add(l);
+        state[DotsToIndex(l.getDot1(), l.getDot2())] = l;
         return checkNewBox(l);
 
+    }
+
+    public int DotsToIndex(Dot d1, Dot d2){
+        int index;
+        if (d1.getX() == d2.getX()){
+            index = d1.getY() + d1.getX() * (size-1) + size * (size-1);
+        }
+        else if (d1.getY() == d2.getY()){
+            index = d1.getX() + d1.getY() * (size-1);
+        }
+        else {
+            throw new IllegalArgumentException("Invalid line");
+        }
+        return index;
     }
 
 
