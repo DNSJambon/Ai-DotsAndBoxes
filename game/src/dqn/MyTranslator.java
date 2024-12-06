@@ -7,19 +7,19 @@ import ai.djl.translate.Batchifier;
 import ai.djl.translate.Translator;
 import ai.djl.translate.TranslatorContext;
 
-public class MyTranslator implements Translator<float[], NDArray> {
+public class MyTranslator implements Translator<float[], float[]> {
 
     @Override
     public NDList processInput(TranslatorContext ctx, float[] input) {
         NDManager manager = ctx.getNDManager();
-        float[] floatInput = new float[input.length];
-        System.arraycopy(input, 0, floatInput, 0, input.length);
-        return new NDList(manager.create(floatInput));
+        NDArray array = manager.create(input);
+        return new NDList(array);
     }
 
     @Override
-    public NDArray processOutput(TranslatorContext ctx, NDList list) {
-        return list.singletonOrThrow();
+    public float[] processOutput(TranslatorContext ctx, NDList list) {
+        NDArray array = list.singletonOrThrow();
+        return array.toFloatArray();
     }
 
     @Override

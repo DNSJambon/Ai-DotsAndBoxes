@@ -1,19 +1,19 @@
 package dqn;
-import game.model.*;
-
+import ai.djl.translate.TranslateException;
 import javax.swing.*;
 import java.util.Arrays;
 import java.util.Random;
 
 public class SelfPlay {
-    public static void main(String[] args){
-        GameState game = new GameState(4);
+    public static void main(String[] args) throws TranslateException {
+        GameState game = new GameState(3);
+        Solver solver = new Solver(3);
 
         int stop = 100;
 
         while (!game.isGameOver()){
-            int[] state = game.getState();
-            int action = new Random().nextInt(state.length);
+            float[] state = game.getState();
+            int action = solver.solve(state);
             while (state[action] != 0) {
                 action = new Random().nextInt(state.length);
             }

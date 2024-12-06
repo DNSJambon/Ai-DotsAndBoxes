@@ -2,19 +2,18 @@ package dqn;
 
 import game.model.*;
 
-import java.util.ArrayList;
 
 public class GameState {
     public int N;
     public Grid grid;
     public Player currentPlayer;
-    public int[] state;
+    public float[] state;
 
     public GameState(int N){
         this.N = N;
         this.grid = new Grid(N, false);
         this.currentPlayer = grid.getPlayer1();
-        this.state = new int[2 * N * (N-1)];
+        this.state = new float[2 * N * (N-1)];
     }
 
 
@@ -41,8 +40,8 @@ public class GameState {
             return turn(d1, d2);
         }
         else {
-            int j = (action - nbHorizontalLines) / N;
-            int i = (action - nbHorizontalLines) % N;
+            int i = (action - nbHorizontalLines) / (N-1);
+            int j = (action - nbHorizontalLines) % (N-1);
             d1 = grid.getDot(i, j);
             d2 = grid.getDot(i, j+1);
             state[action] = 1;
@@ -67,7 +66,7 @@ public class GameState {
     |   |   |
     *-4-*-5-*
      */
-    public int[] getState(){
+    public float[] getState(){
         return state;
     }
 

@@ -205,6 +205,18 @@ public class Grid{
         return index;
     }
 
+    public float[] getState(){
+        float[] state = new float[2 * size * (size-1)];
+        for (int i = 0; i < 2 * size * (size-1); i++){
+            state[i] = 0;
+        }
+        for (Line l : lines){
+            Dot d1 = l.getDot1();
+            Dot d2 = l.getDot2();
+            state[DotsToIndex(d1, d2)] = 1;
+        }
+        return state;
+    }
 
     public boolean isGameOver(){
         return boxes.size() == (size-1) * (size-1);

@@ -53,7 +53,7 @@ public class DQNModel {
 
 
         DQNTrainer dqnTrainer = new DQNTrainer();
-        List<Experience> replayBuffer = dqnTrainer.train(1000, model);
+        List<Experience> replayBuffer = dqnTrainer.train(1000);
         //System.out.println(replayBuffer);
 
         GameDataset dataset = new GameDataset.Builder()

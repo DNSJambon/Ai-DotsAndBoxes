@@ -1,4 +1,6 @@
 package game.controller;
+import ai.djl.translate.TranslateException;
+import dqn.Solver;
 import game.model.*;
 import game.GameView;
 
@@ -8,12 +10,18 @@ public class Controller {
     private final Grid grid;
     private final GameView view;
     private Player currentPlayer;
+    private final Solver solver;
 
     public Controller(Grid grid, GameView view){
         this.grid = grid;
         this.view = view;
         view.setController(this);
         this.currentPlayer = grid.getPlayer1();
+        try {
+            this.solver = new Solver(grid.getSize());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void playerClicked(int x, int y){
@@ -55,7 +63,13 @@ public class Controller {
         }
 
         // find a line for the bot
-        Line l = Solver.getRandLine(grid);
+        Line l;
+        try {
+            l = LineFromAction(solver.solve(grid.getState()));
+            solver.ShowQValues(grid.getState());
+        } catch (TranslateException e) {
+            throw new RuntimeException(e);
+        }
         Dot d1 = l.getDot1();
         Dot d2 = l.getDot2();
 
@@ -140,6 +154,26 @@ public class Controller {
 
     public Player getCurrentPlayer(){
         return currentPlayer;
+    }
+
+    public Line LineFromAction(int action) {
+        int nbHorizontalLines = (grid.getSize()-1) * grid.getSize();
+        Dot d1;
+        Dot d2;
+        if (action < nbHorizontalLines){
+            int j = action / (grid.getSize()-1);
+            int i = action % (grid.getSize()-1);
+            d1 = grid.getDot(i, j);
+            d2 = grid.getDot(i+1, j);
+            return new Line(d1, d2);
+        }
+        else {
+            int i = (action - nbHorizontalLines) / (grid.getSize()-1);
+            int j = (action - nbHorizontalLines) % (grid.getSize()-1);
+            d1 = grid.getDot(i, j);
+            d2 = grid.getDot(i, j+1);
+            return new Line(d1, d2);
+        }
     }
 
     public void restartGame() {

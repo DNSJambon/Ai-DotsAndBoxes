@@ -5,15 +5,13 @@ import ai.djl.ndarray.NDList;
 import ai.djl.ndarray.NDManager;
 import ai.djl.training.dataset.RandomAccessDataset;
 import ai.djl.training.dataset.Record;
-import ai.djl.translate.TranslateException;
 import ai.djl.util.Progress;
 
-import java.io.IOException;
 import java.util.List;
 
 public class GameDataset extends RandomAccessDataset {
 
-    private List<Experience> data;
+    private final List<Experience> data;
 
     protected GameDataset(Builder builder) {
         super(builder);
@@ -21,17 +19,15 @@ public class GameDataset extends RandomAccessDataset {
     }
 
     @Override
-    public Record get(NDManager manager, long index) throws IOException {
+    public Record get(NDManager manager, long index){
         Experience sample = data.get((int) index);
 
-        int[] stateArray = sample.getState();
+        float[] stateArray = sample.state();
         float[] data = new float[stateArray.length];
-        for (int i = 0; i < stateArray.length; i++) {
-            data[i] = stateArray[i];
-        }
+        System.arraycopy(stateArray, 0, data, 0, stateArray.length);
 
         NDArray state = manager.create(data);
-        NDArray action = manager.create(Float.valueOf(sample.getAction()));
+        NDArray action = manager.create(Float.valueOf(sample.action()));
 
         return new Record(
                 new NDList(state), // Input: State
@@ -46,7 +42,7 @@ public class GameDataset extends RandomAccessDataset {
     }
 
     @Override
-    public void prepare(Progress progress) throws IOException, TranslateException {
+    public void prepare(Progress progress) {
 
     }
 

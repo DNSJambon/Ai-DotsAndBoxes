@@ -2,11 +2,7 @@ package dqn;
 
 
 import ai.djl.Model;
-import ai.djl.inference.Predictor;
-import ai.djl.ndarray.NDArray;
 import ai.djl.ndarray.NDManager;
-import ai.djl.ndarray.index.NDIndex;
-import ai.djl.translate.TranslateException;
 import dqn.dataset.Experience;
 
 import java.util.ArrayList;
@@ -14,18 +10,18 @@ import java.util.Random;
 import java.util.List;
 
 public class DQNTrainer {
-    private List<Experience> replayBuffer;
+    private final List<Experience> replayBuffer;
 
 
     public DQNTrainer() {
-        this.replayBuffer = new ArrayList<Experience>();
+        this.replayBuffer = new ArrayList<>();
     }
 
-    public List<Experience> train(int episodes, Model model) {
-        try (NDManager manager = NDManager.newBaseManager()) {
+    public List<Experience> train(int episodes) {
+
             for (int episode = 0; episode < episodes; episode++) {
                 GameState game = new GameState(3);
-                int[] state = game.getState().clone();
+                float[] state = game.getState().clone();
 
                 while (!game.isGameOver()) {
                     int action = selectAction(state);
@@ -43,15 +39,15 @@ public class DQNTrainer {
                     state = game.getState().clone();
                 }
             }
-        }
+
         return replayBuffer;
     }
 
-    private int selectAction(int[] state) {
+    private int selectAction(float[] state) {
         // Epsilon-greedy action selection
         if (true) { // Exploration
             int action = new Random().nextInt(state.length);
-            while (state[action] != 0) {
+            while (state[action] != 0.0) {
                 action = new Random().nextInt(state.length);
             }
             return action;

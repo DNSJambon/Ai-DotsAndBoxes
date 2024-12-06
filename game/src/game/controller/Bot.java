@@ -2,7 +2,7 @@ package game.controller;
 
 import game.model.*;
 
-public class Solver {
+public class Bot {
 
     public static Line getBestLine(Grid grid) {
         return getRandLine(grid);
@@ -11,8 +11,8 @@ public class Solver {
     //get a random line that is not already in the grid
     public static Line getRandLine(Grid grid) {
         int size = grid.getSize();
-        Dot d1 = null;
-        Dot d2 = null;
+        Dot d1;
+        Dot d2;
         Line l = null;
         while (l == null) {
             int x = (int) (Math.random() * (size));
