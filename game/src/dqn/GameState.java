@@ -18,16 +18,17 @@ public class GameState {
     }
 
 
-    public void turn(Dot d1, Dot d2){
+    public int turn(Dot d1, Dot d2){
         boolean box = grid.addLine(d1, d2, currentPlayer);
         if (!box){
             currentPlayer = (currentPlayer == grid.getPlayer1()) ? grid.getPlayer2() : grid.getPlayer1();
         }
+        return (box) ? 1 : 0;
     }
 
 
     // we have to convert the action to the corresponding line
-    public void applyAction(int action) {
+    public int applyAction(int action) {
         int nbHorizontalLines = (N-1) * N;
         Dot d1;
         Dot d2;
@@ -36,16 +37,16 @@ public class GameState {
             int i = action % (N-1);
             d1 = grid.getDot(i, j);
             d2 = grid.getDot(i+1, j);
-            turn(d1, d2);
             state[action] = 1;
+            return turn(d1, d2);
         }
         else {
             int j = (action - nbHorizontalLines) / N;
             int i = (action - nbHorizontalLines) % N;
             d1 = grid.getDot(i, j);
             d2 = grid.getDot(i, j+1);
-            turn(d1, d2);
             state[action] = 1;
+            return turn(d1, d2);
         }
         //System.out.println("Applying action: " + action + " = " + d1 + "-" + d2);
 
@@ -70,12 +71,12 @@ public class GameState {
         return state;
     }
 
-    public int getReward(Player player){
+    public double getReward(Player player){
         if (player == grid.getPlayer1()){
-            return grid.getPlayer1().getScore() - grid.getPlayer2().getScore();
+            return (double) (grid.getPlayer1().getScore() - grid.getPlayer2().getScore()) / (N*N);
         }
         else {
-            return grid.getPlayer2().getScore() - grid.getPlayer1().getScore();
+            return (double) (grid.getPlayer2().getScore() - grid.getPlayer1().getScore()) / (N*N);
         }
     }
 

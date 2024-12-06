@@ -1,18 +1,20 @@
-package dqn;
+package dqn.dataset;
+
+import java.util.Arrays;
 
 public class Experience {
     private final int[] state;
     private final int action;
     private final int reward;
     private final int[] nextState;
-    private final boolean isTerminal;
 
-    public Experience(int[] state, int action, int reward, int[] nextState, boolean isTerminal) {
+
+    public Experience(int[] state, int action, int reward, int[] nextState) {
         this.state = state;
         this.action = action;
         this.reward = reward;
         this.nextState = nextState;
-        this.isTerminal = isTerminal;
+
     }
 
     public int[] getState() {
@@ -31,7 +33,8 @@ public class Experience {
         return nextState;
     }
 
-    public boolean isDone() {
-        return isTerminal;
+    public String toString() {
+        return "State: " + Arrays.toString(state) + " Action: " + action + " Reward: " + reward;
     }
+
 }

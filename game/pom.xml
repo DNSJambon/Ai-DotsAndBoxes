@@ -30,14 +30,12 @@
             <version>0.28.0</version>
         </dependency>
 
-        <!-- PyTorch engine -->
+        <!-- DJL PyTorch Engine -->
         <dependency>
             <groupId>ai.djl.pytorch</groupId>
             <artifactId>pytorch-engine</artifactId>
-            <version>0.23.0</version>
+            <version>0.28.0</version>
         </dependency>
-
-
 
         <!-- Logging for better debugging -->
         <dependency>
