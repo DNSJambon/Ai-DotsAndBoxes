@@ -1,3 +1,4 @@
+
 import random
 
 from DotsAndBoxes import *
@@ -21,6 +22,7 @@ def main():
             while game.state[action] != 0:
                 action = random.randint(0, 2 * game.N * (game.N - 1)-1)
 
+
             print(f"\nPlayer {game.current_player}'s turn")
             reward = game.apply_action(action)
             print(f"Action {action} applied. Reward: {reward}")
@@ -32,6 +34,8 @@ def main():
                 break
 
         print("\nFinal State:")
+        print(game.state.reshape(2 * game.N * (game.N - 1)))
+
         print(f"Final scores: {game.scores}")
     except ValueError as e:
         print(f"Error: {e}")
