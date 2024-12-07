@@ -12,16 +12,17 @@ class DotsAndBoxes:
             raise ValueError("Action already taken!")
 
         self.state[action] = 1
-        box_completed = self._check_and_score(action)
+        box_completed = self._check_new_box(action)
+        self.scores[self.current_player - 1] += box_completed
 
-        if not box_completed:
+        if box_completed == 0:
             self.current_player = 3 - self.current_player  # Switch player
 
-        return 1 if box_completed else 0  # Reward for completing a box
+        return box_completed
 
-    def check_new_box(self, action):
+    def _check_new_box(self, action):
         """Check if the action completes any new boxes."""
-        new_box = False
+        new_box = 0
         box_completed = []
 
         nb_horizontal = (self.N - 1) * self.N
@@ -38,7 +39,7 @@ class DotsAndBoxes:
                 right = self.get_line_index(top_right, (col + 1, row))
                 top = self.get_line_index(top_left, top_right)
                 if self.state[left] and self.state[right] and self.state[top]:
-                    new_box = True
+                    new_box += 1
 
             # Bottom box
             if row < self.N - 1:
@@ -48,12 +49,12 @@ class DotsAndBoxes:
                 right = self.get_line_index((col + 1, row), bottom_right)
                 bottom = self.get_line_index(bottom_left, bottom_right)
                 if self.state[left] and self.state[right] and self.state[bottom]:
-                    new_box = True
+                    new_box += 1
 
         else:  # Vertical line
             action -= nb_horizontal
-            col = action % self.N
-            row = action // self.N
+            row = action % (self.N - 1)
+            col = action // (self.N - 1)
 
             # Left box
             if col > 0:
@@ -63,7 +64,7 @@ class DotsAndBoxes:
                 bottom = self.get_line_index(bottom_left, (col, row + 1))
                 left = self.get_line_index(top_left, bottom_left)
                 if self.state[top] and self.state[bottom] and self.state[left]:
-                    new_box = True
+                    new_box += 1
 
             # Right box
             if col < self.N - 1:
@@ -73,7 +74,7 @@ class DotsAndBoxes:
                 bottom = self.get_line_index((col, row + 1), bottom_right)
                 right = self.get_line_index(top_right, bottom_right)
                 if self.state[top] and self.state[bottom] and self.state[right]:
-                    new_box = True
+                    new_box += 1
 
         return new_box
 
@@ -86,12 +87,9 @@ class DotsAndBoxes:
             row = min(dot1[1], dot2[1])
             col = dot1[0]
             offset = self.N * (self.N - 1)  # Offset for vertical lines
-            return offset + row * self.N + col
+            return offset + col * (self.N-1) + row
         return -1
 
-    def _check_and_score(self, action):
-        # Logic to check if the action completes any boxes and update scores
-        completed = False
 
 
 
