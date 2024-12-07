@@ -17,17 +17,17 @@ public class GameState {
     }
 
 
-    public int turn(Dot d1, Dot d2){
+    public float turn(Dot d1, Dot d2){
         boolean box = grid.addLine(d1, d2, currentPlayer);
         if (!box){
             currentPlayer = (currentPlayer == grid.getPlayer1()) ? grid.getPlayer2() : grid.getPlayer1();
         }
-        return (box) ? 1 : 0;
+        return (float) ((box) ? 1.0 : 0.0);
     }
 
 
     // we have to convert the action to the corresponding line
-    public int applyAction(int action) {
+    public float applyAction(int action) {
         int nbHorizontalLines = (N-1) * N;
         Dot d1;
         Dot d2;
@@ -70,14 +70,10 @@ public class GameState {
         return state;
     }
 
-    public double getReward(Player player){
-        if (player == grid.getPlayer1()){
-            return (double) (grid.getPlayer1().getScore() - grid.getPlayer2().getScore()) / (N*N);
-        }
-        else {
-            return (double) (grid.getPlayer2().getScore() - grid.getPlayer1().getScore()) / (N*N);
-        }
+    public Player getCurrentPlayer(){
+        return currentPlayer;
     }
+
 
     public boolean isGameOver(){
         return grid.isGameOver();

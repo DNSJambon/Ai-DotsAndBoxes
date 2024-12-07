@@ -27,7 +27,7 @@ public class GameDataset extends RandomAccessDataset {
         System.arraycopy(stateArray, 0, data, 0, stateArray.length);
 
         NDArray state = manager.create(data);
-        NDArray action = manager.create(Float.valueOf(sample.action()));
+        NDArray action = manager.create(Float.valueOf(2 ));
 
         return new Record(
                 new NDList(state), // Input: State
