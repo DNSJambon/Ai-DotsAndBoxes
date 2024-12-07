@@ -7,13 +7,13 @@ import java.util.Random;
 public class SelfPlay {
     public static void main(String[] args) throws TranslateException {
         GameState game = new GameState(3);
-        Solver solver = new Solver(3);
+        //Solver solver = new Solver(3);
 
         int stop = 100;
 
         while (!game.isGameOver()){
             float[] state = game.getState();
-            int action = solver.solve(state);
+            int action = new Random().nextInt(state.length);
             while (state[action] != 0) {
                 action = new Random().nextInt(state.length);
             }
