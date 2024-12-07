@@ -89,6 +89,12 @@ class DotsAndBoxes:
             return offset + row * self.N + col
         return -1
 
+    def _check_and_score(self, action):
+        # Logic to check if the action completes any boxes and update scores
+        completed = False
+
+
+
     def is_game_over(self):
         return np.all(self.state == 1)
 
