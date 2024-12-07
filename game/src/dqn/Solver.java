@@ -9,14 +9,13 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static dqn.DQNModel.buildModel;
 
 public class Solver {
     Model model;
     Predictor<float[], float[]> predictor;
 
     public Solver(int N){
-        model = buildModel(2 * N * (N-1), 2 * N * (N-1));
+        //model = buildModel(2 * N * (N-1), 2 * N * (N-1));
         try {
             Path modelDir = Paths.get("model/");
             model.load(modelDir, "mlp");
