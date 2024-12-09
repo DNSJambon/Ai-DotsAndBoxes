@@ -66,7 +66,7 @@ public class Controller {
         Line l;
         try {
             l = LineFromAction(solver.solve(grid.getState()));
-            solver.ShowQValues(grid.getState());
+            solver.showQValues(grid.getState());
         } catch (TranslateException e) {
             throw new RuntimeException(e);
         }

@@ -17,7 +17,7 @@ public class Grid{
     // represents all possible lines in the grid,
     // in a defined order (horizontal lines first, then vertical lines),
     // null if the line do not exist, for now
-    private final Line[] state;
+    private Line[] state;
 
 
 
@@ -227,6 +227,7 @@ public class Grid{
         boxes.clear();
         player1.reset();
         player2.reset();
+        state = new Line[2 * size * (size-1)];
         if (player1.isBot() || player2.isBot()){
             player1.swapBot();
             player2.swapBot();

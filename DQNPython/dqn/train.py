@@ -17,6 +17,7 @@ BATCH_SIZE = 64
 MEMORY_SIZE = 10000
 TARGET_UPDATE = 10
 
+all_rewards = []
 
 def train_dqn():
     # Initialize environment and model
@@ -27,7 +28,7 @@ def train_dqn():
     policy_net = DQN(state_size, action_size)
     target_net = DQN(state_size, action_size)
     target_net.load_state_dict(policy_net.state_dict())
-    target_net.eval()  # Target network doesn't get trained directly
+    target_net.eval()
 
     optimizer = optim.Adam(policy_net.parameters(), lr=LEARNING_RATE)
     replay_buffer = ReplayBuffer(MEMORY_SIZE)
@@ -35,20 +36,22 @@ def train_dqn():
     epsilon = EPSILON_START
     steps_done = 0
 
-    for episode in range(100):  # Number of episodes
+    for episode in range(1000):
+        print(f"Episode {episode + 1}")
         env.reset()
         state = env.get_state()
         done = False
         total_reward = 0
 
         while not done:
-            # Epsilon-greedy action selection
+
             if np.random.rand() < epsilon:
                 action = np.random.randint(action_size)  # Explore
             else:
                 with torch.no_grad():
                     state_tensor = torch.tensor(state, dtype=torch.float32).unsqueeze(0)
                     action = torch.argmax(policy_net(state_tensor)).item()  # Exploit
+
 
             # Apply action in the environment
             try:
@@ -91,15 +94,29 @@ def train_dqn():
             epsilon = max(EPSILON_END, EPSILON_START - steps_done / EPSILON_DECAY)
             steps_done += 1
 
-        print(f"Episode {episode + 1}, Total Reward: {total_reward}")
+        all_rewards.append(total_reward)
 
         # Update the target network
         if episode % TARGET_UPDATE == 0:
             target_net.load_state_dict(policy_net.state_dict())
 
-    torch.save(policy_net.state_dict(), "dqn_model.pth")
+    # Save the model
+    dummy_input = torch.randn(1, state_size, dtype=torch.float32)
+    onnx_path = "model" + str(env.N) + ".onnx"
+
+    torch.onnx.export(
+        policy_net,
+        (dummy_input,),
+        onnx_path,
+        export_params=True,
+        opset_version=11,
+    )
+
+    print(f"Model exported to {onnx_path}")
+
     print("Training complete!")
 
 
 if __name__ == "__main__":
     train_dqn()
+    print(all_rewards)

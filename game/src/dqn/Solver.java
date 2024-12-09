@@ -2,28 +2,29 @@ package dqn;
 
 import ai.djl.MalformedModelException;
 import ai.djl.Model;
+import ai.djl.engine.Engine;
 import ai.djl.inference.Predictor;
+import ai.djl.ndarray.NDArray;
 import ai.djl.translate.TranslateException;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-
 public class Solver {
-    Model model;
-    Predictor<float[], float[]> predictor;
+    private Predictor<float[], float[]> predictor;
 
-    public Solver(int N){
-        //model = buildModel(2 * N * (N-1), 2 * N * (N-1));
+    public Solver(int N) {
         try {
-            Path modelDir = Paths.get("model/");
-            model.load(modelDir, "mlp");
+            System.setProperty("ai.djl.default_engine", "OnnxRuntime");
+            Path modelDir = Paths.get("../DQNPython/dqn/");
+            Model model = Model.newInstance("onnxruntime");
+            model.load(modelDir, "model"+N);
+            predictor = model.newPredictor(new MyTranslator());
+
         } catch (MalformedModelException | IOException e) {
             throw new RuntimeException(e);
         }
-
-        predictor = model.newPredictor(new MyTranslator());
     }
 
     public int solve(float[] state) throws TranslateException {
@@ -39,7 +40,7 @@ public class Solver {
         return action;
     }
 
-    public void ShowQValues(float[] state) throws TranslateException {
+    public void showQValues(float[] state) throws TranslateException {
         float[] input = new float[state.length];
         System.arraycopy(state, 0, input, 0, state.length);
         float[] output = predictor.predict(input);
@@ -50,4 +51,9 @@ public class Solver {
         System.out.println();
     }
 
+    public void close() {
+        if (predictor != null) {
+            predictor.close();
+        }
+    }
 }
