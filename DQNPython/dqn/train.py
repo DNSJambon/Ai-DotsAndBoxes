@@ -8,13 +8,13 @@ from GameLogic.DotsAndBoxes import DotsAndBoxes
 from ReplayBuffer import ReplayBuffer
 
 # Hyperparameters
-GAMMA = 0.99
+GAMMA = 0.97
 LEARNING_RATE = 0.001
 EPSILON_START = 1.0
 EPSILON_END = 0.1
-EPSILON_DECAY = 1000
+EPSILON_DECAY = 10000
 BATCH_SIZE = 64
-MEMORY_SIZE = 10000
+MEMORY_SIZE = 20000
 TARGET_UPDATE = 10
 
 all_rewards = []
@@ -36,8 +36,9 @@ def train_dqn():
     epsilon = EPSILON_START
     steps_done = 0
 
-    for episode in range(1000):
-        print(f"Episode {episode + 1}")
+    e = 10000
+    for episode in range(e):
+        print(f"{int(episode / e * 100)}%") if episode % (e / 100) == 0 else None
         env.reset()
         state = env.get_state()
         done = False
@@ -47,6 +48,8 @@ def train_dqn():
 
             if np.random.rand() < epsilon:
                 action = np.random.randint(action_size)  # Explore
+                while state[action] != 0:
+                    action = np.random.randint(action_size)
             else:
                 with torch.no_grad():
                     state_tensor = torch.tensor(state, dtype=torch.float32).unsqueeze(0)
@@ -57,7 +60,8 @@ def train_dqn():
             try:
                 reward = env.apply_action(action)
             except ValueError:
-                reward = -1  # Penalize invalid moves
+                reward = -100  # Penalize invalid moves
+
             next_state = env.get_state()
             done = env.is_game_over()
 
