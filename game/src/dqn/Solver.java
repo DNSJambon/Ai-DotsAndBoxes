@@ -2,9 +2,7 @@ package dqn;
 
 import ai.djl.MalformedModelException;
 import ai.djl.Model;
-import ai.djl.engine.Engine;
 import ai.djl.inference.Predictor;
-import ai.djl.ndarray.NDArray;
 import ai.djl.translate.TranslateException;
 
 import java.io.IOException;
@@ -19,7 +17,7 @@ public class Solver {
             System.setProperty("ai.djl.default_engine", "OnnxRuntime");
             Path modelDir = Paths.get("../DQNPython/dqn/");
             Model model = Model.newInstance("onnxruntime");
-            model.load(modelDir, "model"+N);
+            model.load(modelDir, "model"+N+"good");
             predictor = model.newPredictor(new MyTranslator());
 
         } catch (MalformedModelException | IOException e) {
