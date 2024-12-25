@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 import numpy
 import numpy as np
 import torch
@@ -7,21 +8,26 @@ from DQN import DQN
 from GameLogic.DotsAndBoxes import DotsAndBoxes
 from ReplayBuffer import ReplayBuffer
 
+N = 3
+
 # Hyperparameters
-GAMMA = 0.97
+EPISODE = 10000
+
+GAMMA = 0.99
 LEARNING_RATE = 0.001
 EPSILON_START = 1.0
-EPSILON_END = 0.1
-EPSILON_DECAY = 10000
-BATCH_SIZE = 64
-MEMORY_SIZE = 20000
+EPSILON_END = 0.005
+EPSILON_DECAY = 20000
+BATCH_SIZE = 128
+MEMORY_SIZE = 15000
 TARGET_UPDATE = 10
 
 all_rewards = []
+all_losses = []
 
 def train_dqn():
     # Initialize environment and model
-    env = DotsAndBoxes(N=3)
+    env = DotsAndBoxes(N=N)
     state_size = 2 * env.N * (env.N - 1)  # Size of the state vector
     action_size = len(env.state)  # Number of possible actions
 
@@ -36,9 +42,8 @@ def train_dqn():
     epsilon = EPSILON_START
     steps_done = 0
 
-    e = 10000
-    for episode in range(e):
-        print(f"{int(episode / e * 100)}%") if episode % (e / 100) == 0 else None
+    for episode in range(EPISODE):
+        print(f"{int(episode / EPISODE * 100)}%, eps = {epsilon}") if episode % (EPISODE / 100) == 0 else None
         env.reset()
         state = env.get_state()
         done = False
@@ -94,6 +99,8 @@ def train_dqn():
                 loss.backward()
                 optimizer.step()
 
+                all_losses.append(loss.item())
+
             # Decay epsilon
             epsilon = max(EPSILON_END, EPSILON_START - steps_done / EPSILON_DECAY)
             steps_done += 1
@@ -119,8 +126,25 @@ def train_dqn():
     print(f"Model exported to {onnx_path}")
 
     print("Training complete!")
+    print("max reward: ", max(all_rewards))
+
+    # Plot the rewards
+    plt.figure(figsize=(12, 5))
+    plt.subplot(1, 2, 1)
+    plt.plot(np.convolve(all_rewards, np.ones(100) / 100, mode='valid'))
+    plt.xlabel('Episode')
+    plt.ylabel('Total Reward')
+    plt.title('Total Rewards over Episodes')
+
+    # Plot the losses
+    plt.subplot(1, 2, 2)
+    plt.plot(np.convolve(all_losses, np.ones(100) / 100, mode='valid'))
+    plt.xlabel('Training Step')
+    plt.ylabel('Loss')
+    plt.title('Loss over Training Steps')
+
+    plt.show()
 
 
 if __name__ == "__main__":
     train_dqn()
-    print(all_rewards)
