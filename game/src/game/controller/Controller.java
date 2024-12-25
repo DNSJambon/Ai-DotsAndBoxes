@@ -1,6 +1,6 @@
 package game.controller;
 import ai.djl.translate.TranslateException;
-import dqn.Solver;
+import dqn.solver.*;
 import game.model.*;
 import game.GameView;
 
@@ -10,7 +10,7 @@ public class Controller {
     private final Grid grid;
     private final GameView view;
     private Player currentPlayer;
-    private final Solver solver;
+    private Solver solver;
 
     public Controller(Grid grid, GameView view){
         this.grid = grid;
@@ -18,9 +18,10 @@ public class Controller {
         view.setController(this);
         this.currentPlayer = grid.getPlayer1();
         try {
-            this.solver = new Solver(grid.getSize());
+            this.solver = new AiSolver(grid.getSize());
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            System.out.println("No model found for this grid size.\n setting the bot to play randomly.");
+            this.solver = new RandomSolver();
         }
     }
 
@@ -65,9 +66,9 @@ public class Controller {
         // find a line for the bot
         Line l;
         try {
-            l = LineFromAction(solver.solve(grid.getState()));
-            solver.showQValues(grid.getState());
-        } catch (TranslateException e) {
+            l = LineFromAction(solver.solve(grid.getState())); // use the solver
+
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
         Dot d1 = l.getDot1();

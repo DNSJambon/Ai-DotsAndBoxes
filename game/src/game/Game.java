@@ -8,7 +8,7 @@ public class Game{
     static boolean bot;
 
     public static void main(String[] args){
-        boolean test = true;
+        boolean test = false;
 
         SwingUtilities.invokeLater(() -> {
 

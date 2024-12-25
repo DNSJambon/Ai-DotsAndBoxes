@@ -1,18 +1,19 @@
-package dqn;
+package dqn.solver;
 
 import ai.djl.MalformedModelException;
 import ai.djl.Model;
 import ai.djl.inference.Predictor;
 import ai.djl.translate.TranslateException;
+import dqn.MyTranslator;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class Solver {
+public class AiSolver implements Solver {
     private Predictor<float[], float[]> predictor;
 
-    public Solver(int N) {
+    public AiSolver(int N) {
         try {
             System.setProperty("ai.djl.default_engine", "OnnxRuntime");
             Path modelDir = Paths.get("../DQNPython/dqn/");
@@ -35,6 +36,7 @@ public class Solver {
                 action = i;
             }
         }
+        showQValues(state);
         return action;
     }
 
